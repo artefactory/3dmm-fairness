@@ -112,6 +112,7 @@
     margin:28px auto 34px;max-width:940px;
   }
   .logos img{height:44px;width:auto;object-fit:contain;display:block;flex:0 1 auto;min-width:0}
+  .logos img:not(:first-child){height:60px}
 
   .authors{
     max-width:760px;margin:0 auto 6px;
@@ -158,6 +159,13 @@
   }
   .teaser figcaption{max-width:none;margin-left:0;margin-right:0;text-align:left}
   .figblock figcaption{text-align:center;margin-left:auto;margin-right:auto;color:var(--ink)}
+  .subsec .figblock{display:flex;flex-direction:column}
+  .subsec .figblock figcaption{order:-1;margin:0 auto 12px;max-width:none}
+  .subfig .subfig-row{display:flex;gap:22px;width:100%}
+  .subfig .subfig-item{flex:1;display:flex;flex-direction:column;align-items:center;min-width:0}
+  .subfig .subfig-item img{width:100%}
+  .subfig .sublabel{font-family:var(--mono);font-size:.85rem;color:var(--ink);margin:0 0 8px}
+  @media (max-width:600px){ .subfig .subfig-row{flex-direction:column} }
   figcaption b{color:var(--ink);font-weight:600}
 
   /* ============ SECTIONS ============ */
@@ -204,15 +212,23 @@
   .subsec ul.facts li::before{content:'\2022';position:absolute;left:5px;color:var(--blue);font-weight:700}
 
   /* data table */
-  .tbl-caption{font-size:.9rem;color:var(--ink);margin:44px 0 6px;line-height:1.5}
+  .tbl-caption{font-size:.9rem;color:var(--ink);margin:44px 0 6px;line-height:1.5;text-align:center}
   .tbl-wrap{overflow-x:auto;margin:0}
   table.data{border-collapse:collapse;width:100%;font-size:.86rem;font-variant-numeric:tabular-nums}
   table.data th,table.data td{padding:7px 10px;text-align:center;white-space:nowrap;border-bottom:1px solid var(--hairline)}
-  table.data thead th{font-family:var(--sans);font-weight:700;color:var(--ink);border-bottom:2px solid var(--ink)}
+  table.data thead th{font-family:var(--sans);font-weight:700;color:var(--ink);border-bottom:1px solid var(--hairline)}
+  table.data thead tr:last-child th{border-bottom:2px solid var(--ink)}
+  table.data th.corner{border-bottom:2px solid var(--ink)}
   table.data td:first-child,table.data th:first-child{text-align:left}
+  table.data thead th[colspan]{text-align:center}
   table.data tr.grp td{border-top:2px solid var(--ink)}
   table.data tr.best td{background:#F3F6FA;font-weight:700}
-  table.data tbody tr:last-child td{border-bottom:0}
+  table.data tbody tr:last-child td{border-bottom:2px solid var(--ink)}
+  table.data td.botrule{border-bottom:2px solid var(--ink)}
+  table.data td.b{font-weight:700}
+  table.data .grouplabel{font-style:italic;text-align:left;vertical-align:middle}
+  table.data td.name{text-align:left}
+  table.data .vr{border-right:1px solid var(--hairline)}
   table.data .m sup,table.data .m sub{font-style:normal}
 
   /* pipeline motif — a genuine sequence, so arrows are earned */
@@ -266,6 +282,7 @@
     body{font-size:17px}
     .logos{gap:20px}
     .logos img{height:26px}
+    .logos img:not(:first-child){height:34px}
     .finding{grid-template-columns:1fr;gap:22px}
     .finding.flip .figblock{order:0}
     .stage{border-right:0;border-bottom:1px solid var(--hairline)}
@@ -458,7 +475,137 @@
 
     <div class="subsec">
       <h3>2. Age &ndash; CRE Pearson Correlation</h3>
-      <!-- content to be added -->
+      <p>CRE detects bias with respect to age, whereas NMSE-based metrics cannot capture it.</p>
+
+      <!-- Fig. 4 -> static/images/age_bias.png -->
+      <figure class="figblock" style="margin-top:24px">
+        <img src="static/images/age_bias.png" alt="A senior subject from REALY reconstructed by BFM, FLAME, and five image-based models, each smoothing away high-frequency facial detail.">
+        <figcaption>Example of age bias on a senior person from REALY benchmark.</figcaption>
+      </figure>
+
+      <p class="tbl-caption">Pearson correlation coefficients between age and CRE across different regions. Strong correlations (&ge; 0.5) are highlighted in bold.</p>
+      <div class="tbl-wrap">
+        <table class="data">
+          <thead>
+            <tr>
+              <th colspan="2" rowspan="3" class="corner vr"></th>
+              <th colspan="12">Pearson correlation: <span class="m">&#8496;<sub>CRE</sub></span> vs. 3D Reconstruction</th>
+            </tr>
+            <tr>
+              <th colspan="3" class="vr">@nose</th>
+              <th colspan="3" class="vr">@mouth</th>
+              <th colspan="3" class="vr">@cheek</th>
+              <th colspan="3">@forehead</th>
+            </tr>
+            <tr>
+              <th>All</th><th>Female</th><th class="vr">Male</th>
+              <th>All</th><th>Female</th><th class="vr">Male</th>
+              <th>All</th><th>Female</th><th class="vr">Male</th>
+              <th>All</th><th>Female</th><th>Male</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="2" class="grouplabel vr">3DMM Repr.</td>
+              <td class="name vr">BFM</td>
+              <td>0.39</td><td>0.32</td><td class="b vr">0.59</td>
+              <td>0.33</td><td>0.21</td><td class="b vr">0.67</td>
+              <td class="b">0.77</td><td class="b">0.72</td><td class="b vr">0.88</td>
+              <td class="b">0.52</td><td>0.49</td><td class="b">0.59</td>
+            </tr>
+            <tr>
+              <td class="name vr">FLAME</td>
+              <td class="b">0.78</td><td class="b">0.79</td><td class="b vr">0.78</td>
+              <td>-0.03</td><td>-0.16</td><td class="vr">0.18</td>
+              <td class="b">0.82</td><td class="b">0.84</td><td class="b vr">0.82</td>
+              <td>0.41</td><td>0.48</td><td>0.25</td>
+            </tr>
+            <tr class="grp">
+              <td rowspan="5" class="grouplabel vr botrule">Model from 2D image</td>
+              <td class="name vr">Deep3D</td>
+              <td>0.24</td><td>0.18</td><td class="vr">0.41</td>
+              <td>-0.23</td><td>-0.19</td><td class="vr">-0.38</td>
+              <td class="b">0.69</td><td class="b">0.81</td><td class="b vr">0.62</td>
+              <td class="b">0.58</td><td class="b">0.54</td><td class="b">0.66</td>
+            </tr>
+            <tr>
+              <td class="name vr">3DDFA-v3</td>
+              <td class="b">0.67</td><td class="b">0.65</td><td class="b vr">0.73</td>
+              <td>0.31</td><td>0.30</td><td class="vr">0.37</td>
+              <td class="b">0.79</td><td class="b">0.78</td><td class="b vr">0.88</td>
+              <td class="b">0.53</td><td class="b">0.55</td><td>0.48</td>
+            </tr>
+            <tr>
+              <td class="name vr">MGCNet</td>
+              <td class="b">0.54</td><td class="b">0.50</td><td class="b vr">0.67</td>
+              <td>0.30</td><td>0.30</td><td class="vr">0.32</td>
+              <td class="b">0.80</td><td class="b">0.79</td><td class="b vr">0.89</td>
+              <td class="b">0.51</td><td class="b">0.54</td><td>0.47</td>
+            </tr>
+            <tr>
+              <td class="name vr">DECA</td>
+              <td class="b">0.73</td><td class="b">0.75</td><td class="b vr">0.70</td>
+              <td>-0.32</td><td>-0.30</td><td class="vr">-0.35</td>
+              <td class="b">0.76</td><td class="b">0.80</td><td class="b vr">0.85</td>
+              <td>0.40</td><td>0.46</td><td>0.28</td>
+            </tr>
+            <tr>
+              <td class="name vr">MICA</td>
+              <td class="b">0.69</td><td class="b">0.72</td><td class="b vr">0.65</td>
+              <td>-0.31</td><td>-0.31</td><td class="vr">-0.30</td>
+              <td class="b">0.79</td><td class="b">0.76</td><td class="b vr">0.88</td>
+              <td>0.43</td><td>0.48</td><td>0.31</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsec">
+      <h3>3. Ethnicity with respect to Error Clusters</h3>
+      <p>CRE offers preliminary insights on bias with respect to ethnicity.</p>
+
+      <!-- Fig. 5 -> static/images/error_clusters.png -->
+      <figure class="figblock" style="margin-top:24px">
+        <img src="static/images/error_clusters.png" alt="Rows of error-cluster centroid maps for BFM and FLAME nose reconstructions.">
+        <figcaption>Error cluster centroids found for BFM (top row) and FLAME (bottom row).</figcaption>
+      </figure>
+
+      <!-- Fig. 6 -> static/images/bfm_nose_error_clusters.png + flame_nose_error_clusters.png -->
+      <figure class="figblock subfig" style="margin-top:32px">
+        <figcaption>Distribution of failure modes @nose for each ethnicity in REALY benchmark.</figcaption>
+        <div class="subfig-row">
+          <div class="subfig-item">
+            <span class="sublabel">BFM</span>
+            <img src="static/images/bfm_nose_error_clusters.png" alt="Distribution of BFM nose failure modes across ethnicities in the REALY benchmark.">
+          </div>
+          <div class="subfig-item">
+            <span class="sublabel">FLAME</span>
+            <img src="static/images/flame_nose_error_clusters.png" alt="Distribution of FLAME nose failure modes across ethnicities in the REALY benchmark.">
+          </div>
+        </div>
+      </figure>
+
+      <p style="margin-top:24px">Asian and African participants have one specific failure mode.</p>
+      <!-- Fig. 7 -> static/images/asian_african_failure_mode.png -->
+      <figure class="figblock" style="margin-top:8px">
+        <img src="static/images/asian_african_failure_mode.png" alt="African and Asian subjects whose BFM reconstructions all fall into the same failure mode at the nose.">
+        <figcaption>Example of African and Asian subjects affected by a failure mode 1 of BFM.</figcaption>
+      </figure>
+    </div>
+
+    <div class="subsec">
+      <h3>4. Morphology Traits with respect to Error Clusters</h3>
+      <ul class="facts">
+        <li>Each CRE failure mode corresponds to a specific morphology.</li>
+        <li>3DMM failure modes are systematic rather than stochastic.</li>
+      </ul>
+
+      <!-- Fig. 8 -> static/images/morphology_clusters.png (rename to your file) -->
+      <figure class="figblock" style="margin-top:24px">
+        <img src="static/images/morphology_clusters.png" alt="Centroids for error clusters identified for BFM and FLAME, each annotated with the principal component of maximal mean absolute value and its sign.">
+        <figcaption>PC centroids for error clusters identified for BFM and FLAME. In (&middot;) there are the number of PC that has maximal mean absolute value for the corresponding error cluster and its sign.</figcaption>
+      </figure>
     </div>
   </div>
 </section>
